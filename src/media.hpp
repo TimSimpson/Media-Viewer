@@ -1,6 +1,8 @@
 #ifndef FILE_ST4_MEDIA_VIEWER
 #define FILE_ST4_MEDIA_VIEWER
 
+#include <lp3/core.hpp>
+
 namespace st4 { namespace media_viewer {
 
 
@@ -32,8 +34,14 @@ class MediaPlayer {
 public:
     MediaPlayer(lp3::sdl::Window & window);
     ~MediaPlayer();
+
+	void handle_events(const SDL_WindowEvent & window_event);
+
+    void hide_bar();
+
+    void open_file(const char * path);
 private:
-    class Impl;
+    struct Impl;
     Impl * impl;
 };
 

@@ -1,0 +1,6 @@
+# In addition to the following dependencies which CGet will grab, you'll also
+# need the ATL stuff installed for Visual Studio, as well as WMP.dll which
+# comes with Windows Media Player.
+
+TimSimpson/download-sdl2
+TimSimpson/Lp3-Engine@cget

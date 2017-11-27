@@ -1,5 +1,6 @@
-#ifndef FILE_ST4_MEDIA_VIEWER
-#define FILE_ST4_MEDIA_VIEWER
+#ifndef FILE_ST4_MPLAYER_HPP
+#define FILE_ST4_MPLAYER_HPP
+#pragma once
 
 #include <lp3/core.hpp>
 

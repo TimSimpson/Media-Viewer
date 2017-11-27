@@ -1,4 +1,4 @@
-#include "media.hpp"
+#include "mplayer.hpp"
 
 #include <wmp.h>
 #include <atlbase.h>
@@ -91,6 +91,8 @@ struct MediaPlayer::Impl {
     }
 
     ~Impl() {
+		media_player->close();
+		//ax_window.DestroyWindow();
     }
 };
 

@@ -38,6 +38,8 @@ public:
 
 	void handle_events(const SDL_WindowEvent & window_event);
 
+	void hide(); 
+
     void hide_bar();
 
     void open_file(const char * path);

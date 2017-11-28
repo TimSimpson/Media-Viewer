@@ -1,9 +1,10 @@
 #include <lp3/core.hpp>
 #include <lp3/gfx.hpp>
 #include "mplayer.hpp"
+#include <SDL_ttf.h>
 #include <lp3/main.hpp>
 
-#include <filesystem>
+// #include <filesystem>
 
 namespace core = lp3::core;
 namespace gfx = lp3::gfx;
@@ -31,7 +32,8 @@ int _main(core::PlatformLoop & loop) {
 	core::MediaManager media("D:\\Work\\MediaViewerFiles");
 
     sdl::SDL2 sdl2(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK| SDL_INIT_GAMECONTROLLER);
-	
+    TTF_Init();
+
 	sdl::Window window = SDL_CreateWindow(
 		"Media Viewer",
 		SDL_WINDOWPOS_CENTERED,
@@ -60,19 +62,11 @@ int _main(core::PlatformLoop & loop) {
 	}
 
 	{
-
 		MediaPlayer media_player(window);
 
 		media_player.hide_bar();
-		media_player.open_file("D:\\Work\\media.mp4");
+		media_player.open_file("D:\\Work\\MediaViewerFiles\\media.mp4");
 	}
-
-
-	MediaPlayer media_player(window);
-
-	media_player.hide_bar();
-	media_player.open_file("D:\\Work\\media.mp4");
-
 
 
 	int width, height;

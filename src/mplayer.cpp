@@ -102,6 +102,7 @@ MediaPlayer::MediaPlayer(lp3::sdl::Window & window)
 }
 
 MediaPlayer::~MediaPlayer() {
+	hide();
     delete impl;
 }
 
@@ -114,6 +115,11 @@ void MediaPlayer::handle_events(const SDL_WindowEvent & window_event) {
 		break;
 	}
 }
+
+void MediaPlayer::hide() {
+	impl->ax_window.ShowWindow(SW_HIDE);
+}
+
 void MediaPlayer::hide_bar() {
     CComBSTR ui_mode("none");
     impl->media_player->put_uiMode(ui_mode);

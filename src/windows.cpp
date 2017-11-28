@@ -1,5 +1,8 @@
 #include <lp3/core.hpp>
 #include <lp3/gfx.hpp>
+#include <lp3/sims.hpp>
+#include "browser.hpp"
+#include "controls.hpp"
 #include "mplayer.hpp"
 #include <SDL_ttf.h>
 #include <lp3/main.hpp>
@@ -9,16 +12,7 @@
 namespace core = lp3::core;
 namespace gfx = lp3::gfx;
 namespace sdl = lp3::sdl;
-
-
-
-#define WIN_CALL(code) { \
-		HRESULT	result = code ;  \
-		if (result < 0) { \
-			LP3_LOG_ERROR("Error at %s, %d", __FILE__, __LINE__); \
-			return 1;	\
-		} \
-	}
+namespace sims = lp3::sims;
 
 
 using namespace st4::media_viewer;
@@ -43,6 +37,8 @@ int _main(core::PlatformLoop & loop) {
 		SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE
 	);
 
+	Controls controls;
+
 	sdl::Renderer renderer
 		= SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 
@@ -53,7 +49,7 @@ int _main(core::PlatformLoop & loop) {
 	sdl::Surface bitmap = IMG_Load_RW(in_file, 0);
 	sdl::Texture tex = SDL_CreateTextureFromSurface(renderer, bitmap);
 
-
+	FileBrowser browser(media, renderer);
 
 	AtlHostingCode atl_hosting_code;
 	if (!atl_hosting_code.ok()) {
@@ -73,6 +69,9 @@ int _main(core::PlatformLoop & loop) {
 
 	SDL_RenderSetLogicalSize(renderer, 1920, 1080);
 
+	const std::int64_t ms_per_update = 1000 / 60;  //16 ms for 60 fps
+	sims::GameClock clock(ms_per_update);
+
     return loop.run([&]() {
         SDL_Event e;
         if (SDL_PollEvent(&e)) {
@@ -91,8 +90,14 @@ int _main(core::PlatformLoop & loop) {
 			}
         }
 
+		clock.run_updates([&](std::int64_t ms) {
+			controls.update(ms);
+			browser.update(controls);
+		});
+
 		SDL_RenderClear(renderer);
 		SDL_RenderCopy(renderer, tex, nullptr, nullptr);
+		browser.render();
 		SDL_RenderPresent(renderer);
 		return true;
     });

@@ -23,7 +23,7 @@ core::GlobalVar<AtlModule> atl_module;
 
 int _main(core::PlatformLoop & loop) {
 	core::LogSystem log;
-	core::MediaManager media("D:\\Work\\MediaViewerFiles");
+	core::MediaManager media;
 
     sdl::SDL2 sdl2(SDL_INIT_VIDEO|SDL_INIT_JOYSTICK| SDL_INIT_GAMECONTROLLER);
     TTF_Init();
@@ -42,7 +42,11 @@ int _main(core::PlatformLoop & loop) {
 	sdl::Renderer renderer
 		= SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
 	
-	FileBrowser browser(window, media, renderer, "D:\\Work\\MediaViewerFiles");
+	std::string root_directory{ "D:\\Work\\MediaViewerFiles" };
+	if (1 < loop.command_line_args().size()) {
+		root_directory = loop.command_line_args()[1];
+	}
+	FileBrowser browser(window, media, renderer, root_directory);
 
 	AtlHostingCode atl_hosting_code;
 	if (!atl_hosting_code.ok()) {

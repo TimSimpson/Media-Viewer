@@ -64,7 +64,7 @@ void FileBrowser::handle_events(const SDL_WindowEvent & window_event) {
 }
 
 void FileBrowser::render() {
-	if (old_index != index) {
+	if (!file_is_open && old_index != index) {
 		LP3_LOG_INFO("Time to update text.")
 			update_text();
 		old_index = index;
@@ -92,7 +92,7 @@ void FileBrowser::set_directory(const fs::path & path) {
 	this->max = current_folders.size() + current_files.size();
 }
 
-void FileBrowser::set_file(const fs::path & path) {
+void FileBrowser::set_file() {
 	file_is_open = true;
 	const auto file = this->current_directory 
 		/ this->current_files[this->index - this->current_folders.size()];
@@ -102,6 +102,8 @@ void FileBrowser::set_file(const fs::path & path) {
 	
 	SDL_Texture * new_texture = nullptr;
 	if (ext == ".jpg" || ext == ".png" || ext == ".bmp") {		
+		media_player.hide();
+		media_player.stop();
 		auto s = file.string();
 		lp3::sdl::Surface image = IMG_Load(s.c_str());
 		this->rect = boost::none;
@@ -111,6 +113,8 @@ void FileBrowser::set_file(const fs::path & path) {
 		media_player.open_file(s.c_str());
 		media_player.show();
 	} else {
+		media_player.hide();
+		media_player.stop();
 		SDL_Color red = { 255, 0, 0 };
 		lp3::sdl::Surface surface
 			= TTF_RenderText_Blended_Wrapped(
@@ -154,7 +158,7 @@ void FileBrowser::update_directory_browser(Controls & controls) {
 		}
 		else if (index < lp3::narrow<long long>(
 			current_folders.size() + current_files.size())) {
-			set_file(current_files[index - current_folders.size()]);
+			set_file();
 			return;
 		}
 	}
@@ -175,6 +179,14 @@ void FileBrowser::update_media_viewer(Controls & controls) {
 		old_index = -1; // trigger redraw
 		media_player.hide();
 		media_player.stop();
+	}
+	if (index > current_folders.size() && controls.left()) {
+		--index;
+		set_file();
+	}
+	if (index < (max - 1) && controls.right()) {
+		++index;
+		set_file();
 	}
 }
 

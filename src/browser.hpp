@@ -49,7 +49,7 @@ private:
 	MediaPlayer media_player;
 
 	void set_directory(const fs::path  & path);
-    void set_file(const fs::path & path);
+    void set_file();
 
 	void update_directory_browser(Controls & controls);
 	void update_media_viewer(Controls & controls);

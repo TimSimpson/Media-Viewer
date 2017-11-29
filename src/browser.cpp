@@ -108,6 +108,24 @@ void FileBrowser::set_file() {
 		lp3::sdl::Surface image = IMG_Load(s.c_str());
 		this->rect = boost::none;
 		new_texture = SDL_CreateTextureFromSurface(renderer, image);
+		
+		
+		this->rect = SDL_Rect{};
+		double w = static_cast<SDL_Surface *>(image)->w;
+		double h = static_cast<SDL_Surface *>(image)->h;
+
+		if (w / h >= (1920 / 1080)) {
+			// stretch to max horizontal, scale vertical
+			this->rect->w = 1920;
+			this->rect->h = (1920 * h) / w;
+		} else {
+			// stretch to max vertical, downsize horizontal
+			this->rect->h = 1080;
+			this->rect->w = (w * 1080) / h;
+		}
+
+		this->rect->x = 0;
+		this->rect->y = 0;		
 	} else if (ext == ".mp4" || ext == ".mov") {
 		auto s = file.string();
 		media_player.open_file(s.c_str());

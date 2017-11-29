@@ -49,7 +49,7 @@ int _main(core::PlatformLoop & loop) {
 	sdl::Surface bitmap = IMG_Load_RW(in_file, 0);
 	sdl::Texture tex = SDL_CreateTextureFromSurface(renderer, bitmap);
 
-	FileBrowser browser(media, renderer);
+	FileBrowser browser(media, renderer, "D:\\Work\\MediaViewerFiles");
 
 	AtlHostingCode atl_hosting_code;
 	if (!atl_hosting_code.ok()) {
@@ -92,7 +92,10 @@ int _main(core::PlatformLoop & loop) {
 
 		clock.run_updates([&](std::int64_t ms) {
 			controls.update(ms);
-			browser.update(controls);
+			auto new_file = browser.update(controls);
+			if (new_file) {
+				// TODO: THIS
+			}
 		});
 
 		SDL_RenderClear(renderer);

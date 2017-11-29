@@ -13,8 +13,12 @@ private:
     std::array<bool, input::max_button_count> state;
 public:
     Impl()
-    :   controls()
+    :   controls(),
+		back_off_time{},
+		state{}
     {
+		std::fill(back_off_time.begin(), back_off_time.end(), 0);
+		std::fill(state.begin(), state.end(), false);
         input::PreferredButtonMapping game_pad_mapping;
         game_pad_mapping.device = input::PreferredDevice::GAME_PAD;
         game_pad_mapping.set_mapping(
@@ -75,8 +79,8 @@ public:
             }
         }
 
-        // Flip back on the states if necessary.
-        for (int i = 0; i < input::max_button_count; ++ i) {
+        // Flip back on the states if necessary.		
+        for (int i = 0; i < input::max_button_count; ++ i) {			
             if ((state[i] =
                     (controls.get_control(0).state(i) && back_off_time[i] <= 0))
                 )
@@ -84,6 +88,12 @@ public:
                 back_off_time[i] = 100;
             }
         }
+
+		if (state[5]) {
+			bool a = controls.get_control(0).state(5);
+			bool b = back_off_time[5] <= 0;
+			int five = 5;
+		}
     }
 };
 

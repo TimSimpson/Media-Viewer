@@ -13,17 +13,20 @@ namespace st4 { namespace media_viewer {
 // This class browses a file or directory.
 class FileBrowser {
 public:
-    FileBrowser(lp3::core::MediaManager & media, lp3::sdl::Renderer & renderer);
+    FileBrowser(lp3::core::MediaManager & media, lp3::sdl::Renderer & renderer,
+		        std::string top_directory);
 	~FileBrowser();
 
     void render();
 
-	void update(Controls & controls);
+	boost::optional<std::string> update(Controls & controls);
 
 private:
     lp3::core::MediaManager & media;
 	lp3::sdl::Renderer & renderer;
+	std::string top_directory;
 	SDL_Texture * texture;
+	lp3::sdl::RWops font_file;
 	TTF_Font * font;
 	SDL_Rect rect;
 	long long index;

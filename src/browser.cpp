@@ -14,7 +14,7 @@ FileBrowser::FileBrowser(
 )
 :   media(_media),
 	renderer(_renderer),
-	top_directory(fs::absolute(fs::path(_top_directory)).string()),
+	top_directory(fs::absolute(fs::path(_top_directory))),
 	texture(),
 	font_file(),
 	font(nullptr),
@@ -61,7 +61,7 @@ void FileBrowser::render() {
     SDL_RenderCopy(renderer, texture, nullptr, &rect);
 }
 
-void FileBrowser::set_directory(const std::string & path) {
+void FileBrowser::set_directory(const fs::path & path) {
 	current_directory = path;
 	current_folders.clear();
 	current_files.clear();
@@ -72,10 +72,10 @@ void FileBrowser::set_directory(const std::string & path) {
 	for (auto itr = fs::directory_iterator(root);
 		itr != fs::directory_iterator{}; ++itr) {
 		if (is_regular_file(*itr)) {
-			current_files.push_back(itr->path().filename().string());
+			current_files.push_back(itr->path().filename());
 		}
 		else {
-			current_folders.push_back(itr->path().filename().string());
+			current_folders.push_back(itr->path().filename());
 		}
 	}
 	this->max = current_folders.size() + current_files.size();
@@ -92,20 +92,20 @@ boost::optional<std::string> FileBrowser::update(Controls & controls) {
 		if (index < lp3::narrow<long long>(current_folders.size())) {
 			const auto new_path 
 				= fs::path(current_directory) / fs::path(current_folders[index]);
-			const auto abs_new_path = fs::absolute(new_path).string();
+			const auto abs_new_path = fs::absolute(new_path);
 			set_directory(abs_new_path);
 			old_index = -1; // trigger redraw			
 		} else if (index < lp3::narrow<long long>(
 					current_folders.size() + current_files.size())) {
-			return current_files[index - current_folders.size()];
+			return current_files[index - current_folders.size()].string();
 		}
 	}
 	if (controls.cancel()) {
-		auto current = fs::absolute(fs::path(current_directory)).string();
+		auto current = fs::absolute(fs::path(current_directory));
 		if (top_directory != current_directory) {
 			auto new_path
 				= fs::path(current_directory).parent_path();			
-			set_directory(fs::absolute(new_path).string());
+			set_directory(fs::absolute(new_path));
 			old_index = -1; // trigger redraw
 		}		
 	}
@@ -133,7 +133,7 @@ void FileBrowser::update_text() {
 	}
 
 	int another_index = 0;
-	auto iterate_list = [&](std::vector<std::string> & list) {
+	auto iterate_list = [&](std::vector<fs::path> & list) {
 		for (const auto & s : list) {
 			if (another_index >= start_at && another_index < end_at) {
 				text << (index == another_index ? "-->" : "   ") << s << "\n";
@@ -147,14 +147,8 @@ void FileBrowser::update_text() {
 	auto text_s = text.str();
 	
 	SDL_Color yellow = { 255, 255, 0 };
-	// lp3::sdl::Surface surface = TTF_RenderText_Solid(font, text_s.c_str(), yellow);
-	LP3_LOG_INFO("Creating text: %s", text_s);
-	LP3_LOG_ERROR("SDL_GetError: %s", SDL_GetError());
-	LP3_LOG_ERROR("TTF_GetError: %s", TTF_GetError());	
-	LP3_LOG_ERROR("font: %x", font);
-	LP3_LOG_ERROR("current_directory %s", current_directory);
 	if (text_s.length() <= 0) {
-		return;
+		text_s = " * * empty directory * *";
 	}
 	lp3::sdl::Surface surface 
 		= TTF_RenderText_Blended_Wrapped(font, text_s.c_str(), yellow, 1920);
@@ -168,7 +162,6 @@ void FileBrowser::update_text() {
 	}
 	this->texture = new_texture;
 	
-
 	this->rect.w = static_cast<SDL_Surface *>(surface)->w;
 	this->rect.h = static_cast<SDL_Surface *>(surface)->h;
 	this->rect.x = 0;

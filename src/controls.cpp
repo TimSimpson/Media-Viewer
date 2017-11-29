@@ -29,7 +29,7 @@ public:
         kb_mapping.device = input::PreferredDevice::KEYBOARD;
         kb_mapping.set_mapping(
             "Up", "Down", "Left", "Right",
-            "Z", "X", "Return");
+            "Return", "Space", "Escape");
 
         std::vector<input::PreferredButtonMapping> preferred_mappings = {
             game_pad_mapping, kb_mapping
@@ -85,15 +85,9 @@ public:
                     (controls.get_control(0).state(i) && back_off_time[i] <= 0))
                 )
             {
-                back_off_time[i] = 100;
+                back_off_time[i] = i < 4 ? 100 : 1000;
             }
         }
-
-		if (state[5]) {
-			bool a = controls.get_control(0).state(5);
-			bool b = back_off_time[5] <= 0;
-			int five = 5;
-		}
     }
 };
 

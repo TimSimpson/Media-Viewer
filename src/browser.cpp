@@ -118,14 +118,15 @@ void FileBrowser::set_file() {
 			// stretch to max horizontal, scale vertical
 			this->rect->w = 1920;
 			this->rect->h = (1920 * h) / w;
+			this->rect->x = 0;
+			this->rect->y = (1080 - this->rect->h) / 2;
 		} else {
 			// stretch to max vertical, downsize horizontal
 			this->rect->h = 1080;
 			this->rect->w = (w * 1080) / h;
+			this->rect->x = (1920 - this->rect->w) / 2;
+			this->rect->y = 0;
 		}
-
-		this->rect->x = 0;
-		this->rect->y = 0;		
 	} else if (ext == ".mp4" || ext == ".mov") {
 		auto s = file.string();
 		media_player.open_file(s.c_str());

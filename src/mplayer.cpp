@@ -30,7 +30,7 @@ namespace {
         SDL_VERSION(&info.version);
         if (!SDL_GetWindowWMInfo(window, &info)) {
             LP3_LOG_ERROR("SDL ERROR: %s", SDL_GetError());
-            throw lp3::core::Exception();
+			LP3_THROW2(lp3::core::Exception, SDL_GetError());
         }
         return info.info.win.window;
     }
@@ -128,6 +128,19 @@ void MediaPlayer::hide_bar() {
 void MediaPlayer::open_file(const char * path) {
     CComBSTR com_path(path);
     impl->media_player->put_URL(com_path);
+}
+
+void MediaPlayer::show() {
+	impl->ax_window.ShowWindow(SW_SHOW);
+}
+
+void MediaPlayer::stop() {
+	IWMPControls * controls;
+	WIN_CALL(impl->media_player->get_controls(&controls));
+	if (!controls) {
+		LP3_THROW2(lp3::core::Exception, "Couldn't fetch controls.");
+	}
+	controls->stop();
 }
 
 }   }

@@ -41,27 +41,13 @@ int _main(core::PlatformLoop & loop) {
 
 	sdl::Renderer renderer
 		= SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED);
-
-	auto in_file = media.load("31-17_56_38-IMG_2409.JPG");
-	//IMG_Load_RW(in_file, 0);
-	//const auto bmp_file = media.path("Engine/Gfx/Earth.bmp");
-	//sdl::Surface bitmap = IMG_Load_RW(in_file, 0);
-	sdl::Surface bitmap = IMG_Load_RW(in_file, 0);
-	sdl::Texture tex = SDL_CreateTextureFromSurface(renderer, bitmap);
-
-	FileBrowser browser(media, renderer, "D:\\Work\\MediaViewerFiles");
+	
+	FileBrowser browser(window, media, renderer, "D:\\Work\\MediaViewerFiles");
 
 	AtlHostingCode atl_hosting_code;
 	if (!atl_hosting_code.ok()) {
 		LP3_LOG_ERROR("Couldn't init ATL...");
 		return 1;
-	}
-
-	{
-		MediaPlayer media_player(window);
-
-		media_player.hide_bar();
-		media_player.open_file("D:\\Work\\MediaViewerFiles\\media.mp4");
 	}
 
 
@@ -80,6 +66,7 @@ int _main(core::PlatformLoop & loop) {
 				return false;
 			case SDL_WINDOWEVENT:
 				//media_player.handle_events(e.window);
+				browser.handle_events(e.window);
 				if (e.window.event == SDL_WINDOWEVENT_SIZE_CHANGED) {
 					width = e.window.data1;
 					height = e.window.data2;
@@ -92,14 +79,10 @@ int _main(core::PlatformLoop & loop) {
 
 		clock.run_updates([&](std::int64_t ms) {
 			controls.update(ms);
-			auto new_file = browser.update(controls);
-			if (new_file) {
-				// TODO: THIS
-			}
+			browser.update(controls);
 		});
 
 		SDL_RenderClear(renderer);
-		SDL_RenderCopy(renderer, tex, nullptr, nullptr);
 		browser.render();
 		SDL_RenderPresent(renderer);
 		return true;

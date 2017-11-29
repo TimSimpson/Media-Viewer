@@ -43,6 +43,10 @@ public:
     void hide_bar();
 
     void open_file(const char * path);
+
+	void show();
+
+	void stop();
 private:
     struct Impl;
     Impl * impl;
